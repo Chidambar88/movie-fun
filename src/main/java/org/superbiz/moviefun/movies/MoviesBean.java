@@ -16,10 +16,12 @@
  */
 package org.superbiz.moviefun.movies;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
@@ -29,16 +31,28 @@ import java.util.List;
 @Repository
 public class MoviesBean {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "movies")
     private EntityManager entityManager;
+
+    @Autowired
+    private  EntityManagerFactory moviesEntityManagerFactoryBean;
+
+    public MoviesBean(EntityManagerFactory moviesEntityManagerFactoryBean ){
+        entityManager=moviesEntityManagerFactoryBean.createEntityManager();
+    }
 
     public Movie find(Long id) {
         return entityManager.find(Movie.class, id);
     }
 
-    @Transactional
+
+
+
     public void addMovie(Movie movie) {
+        /*entityManager=moviesEntityManagerFactoryBean.createEntityManager();
+        entityManager.getTransaction().begin();*/
         entityManager.persist(movie);
+      //  entityManager.getTransaction().commit();
     }
 
     @Transactional

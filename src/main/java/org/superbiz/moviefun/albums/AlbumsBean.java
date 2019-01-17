@@ -16,10 +16,12 @@
  */
 package org.superbiz.moviefun.albums;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaQuery;
 import java.util.List;
@@ -27,11 +29,22 @@ import java.util.List;
 @Repository
 public class AlbumsBean {
 
-    @PersistenceContext
+    @PersistenceContext(unitName = "albums")
     private EntityManager entityManager;
 
-    @Transactional
+    @Autowired
+    private EntityManagerFactory albumsEntityManagerFactoryBean;
+
+    public AlbumsBean(EntityManagerFactory albumsEntityManagerFactoryBean ){
+        entityManager=albumsEntityManagerFactoryBean.createEntityManager();
+    }
+
+
     public void addAlbum(Album album) {
+        entityManager=albumsEntityManagerFactoryBean.createEntityManager();
+        entityManager.getTransaction().begin();
+        entityManager.persist(album);
+        entityManager.getTransaction().commit();
         entityManager.persist(album);
     }
 
